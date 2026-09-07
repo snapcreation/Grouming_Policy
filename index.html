@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1f1b16">
+<title>Vysyaraju Jewellers - Violation Dashboard</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+body{background:linear-gradient(135deg,#f8f5ef 0%,#f4f1ea 50%,#eee8dc 100%);color:#29241d;overflow-x:hidden;zoom:.76}
+button,input,select,textarea{font-family:Arial,Helvetica,sans-serif}button{cursor:pointer}
+input,select,textarea{outline:none}
+:root{--gold:#c39a4e;--gold-dark:#9b7635;--gold-light:#ead9ad;--gold-soft:#f7efde;--cream:#f4f1ea;--cream-light:#faf8f3;--brown:#4b3a22;--dark:#1f1b16;--text:#29241d;--muted:#756b5c;--border:#d8cdb9;--white:#fff;--danger:#b42318;--danger-light:#fff1ef;--success:#18794e;--success-light:#edf8f2;--shadow:0 5px 18px rgba(75,58,34,.08)}
+input,select,textarea{border:1px solid #cfc3ae;background:#fff;color:var(--text);border-radius:6px;transition:.15s ease}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)!important;box-shadow:0 0 0 2px rgba(195,154,78,.12)}
+.app{width:100%;max-width:1500px;margin:0 auto;padding:8px}
+.header{width:100%;background:linear-gradient(135deg,#1f1b16,#33291c);color:#fff;padding:14px 18px;border:1px solid #8f713b;border-radius:8px;margin-bottom:8px;box-shadow:0 4px 15px rgba(31,27,22,.16);position:relative;overflow:hidden}
+.header:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:3px;background:linear-gradient(90deg,#9b7635,#ead9ad,#c39a4e,#ead9ad,#9b7635)}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.header h1{margin:0;font-size:20px;letter-spacing:.4px}.header p{margin:4px 0 0;font-size:11px;color:#e6dcc9}
+.header-badge{padding:6px 10px;border:1px solid #8f713b;border-radius:20px;background:rgba(255,255,255,.07);font-size:9px;font-weight:800;color:#ead9ad}
+.dashboard-form{display:grid;grid-template-columns:1fr 1fr 1fr 1.15fr;gap:8px;margin-bottom:8px;align-items:stretch}
+.dashboard-form>.card{min-width:0}.entry-section,.employee-card,.reporter-card,.evidence-card{height:100%}
+.card{background:rgba(255,255,255,.97);border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow);overflow:hidden}
+.card.editing{border:2px solid var(--gold);box-shadow:0 0 0 3px rgba(195,154,78,.12)}.card.editing .card-header{background:linear-gradient(90deg,#ead9ad,#f7efde);color:#4b3a22}
+.card-header{padding:10px 12px;border-bottom:1px solid var(--border);background:linear-gradient(90deg,#faf8f3,#f4f1ea);color:var(--brown);font-weight:800;font-size:13px;position:relative}
+.card-header:after{content:"";position:absolute;bottom:0;left:0;width:55px;height:2px;background:var(--gold)}
+.form-container{padding:10px}.field{margin-bottom:8px}label{display:block;margin-bottom:4px;font-size:10px;font-weight:800;color:#514532}.required{color:var(--danger)}
+input,select{width:100%;height:32px;padding:6px 8px;font-size:10px}textarea{width:100%;min-height:55px;padding:7px 8px;resize:vertical;font-size:10px}
+.policy-info{background:#faf7ef;border:1px solid #dfd2b8;border-left:3px solid var(--gold);border-radius:5px;padding:7px;font-size:9px;line-height:1.4;color:#655943;margin-top:5px}
+.policy-info strong{color:var(--brown)}
+.lookup-status{font-size:8.5px;margin-top:3px;color:var(--muted);min-height:12px;transition:color .2s;font-weight:700}
+.lookup-status.found{color:#18794e}.lookup-status.error{color:#b42318}.lookup-status.loading{color:#9b7635}
+.media-container{border:1px dashed #b9a57f;background:#fbf9f4;border-radius:6px;padding:7px}
+.media-button{width:100%;border:1px solid #9f7936;border-radius:5px;background:linear-gradient(135deg,#c39a4e,#a87f3c);color:#fff;padding:8px;font-weight:800;font-size:9px;margin-top:5px;transition:.15s ease}
+.media-button:hover{background:linear-gradient(135deg,#d2ad64,#9b7635);transform:translateY(-1px)}
+.media-note{margin-top:6px;font-size:8px;line-height:1.45;color:var(--muted)}
+.camera-container{display:none;margin-top:7px;border:1px solid #8d7651;border-radius:6px;overflow:hidden;background:#000}
+.camera-container.active{display:block}
+#cameraVideo{width:100%;display:block;max-height:230px;object-fit:cover;background:#000}
+.recording-status{display:none;text-align:center;background:#7f1d1d;color:#fff;padding:5px;font-size:9px;font-weight:800}
+.recording-status.active{display:block}
+.camera-buttons{display:flex;gap:4px;padding:5px;background:#241f18}
+.camera-buttons button{flex:1;border:0;border-radius:4px;padding:7px 4px;font-size:8px;font-weight:800}
+.capture{background:#18804b;color:#fff}.start-record{background:#b42318;color:#fff}.stop-record{background:#991b1b;color:#fff}.close-camera{background:#e8dfd0;color:#4b3a22}
+.media-preview{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.preview-card{width:82px;height:65px;position:relative;overflow:hidden;border:1px solid #cdbb98;border-radius:5px;background:#e5e0d7}
+.preview-card img,.preview-card video{width:100%;height:100%;object-fit:cover}
+.remove-media{position:absolute;top:3px;right:3px;width:17px;height:17px;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.78);color:#fff;font-size:11px}
+.form-buttons{display:flex;gap:5px;margin-top:8px}
+.btn{border:0;border-radius:5px;padding:8px 10px;font-size:9px;font-weight:800;transition:.15s ease}.btn:hover{transform:translateY(-1px)}
+.clear-btn{background:#e8dfd0;color:#55452f;border:1px solid #d1c1a6}
+.submit-btn{flex:1;background:linear-gradient(135deg,#c39a4e,#a87f3c);color:#fff;border:1px solid #987333}
+.submit-btn:hover{background:linear-gradient(135deg,#d1a95c,#9b7635)}
+.save-btn{background:linear-gradient(135deg,#18794e,#14613e);color:#fff;border:1px solid #0f5132;min-width:90px}
+.save-btn:hover{background:linear-gradient(135deg,#1e8a56,#18794e)}
+.status{display:none;min-height:15px;margin-top:5px;padding:5px 7px;border-radius:4px;font-size:8px;font-weight:700}
+.status.show{display:block}.status.success{color:#176b47;background:var(--success-light);border:1px solid #b9e2cb}
+.status.error{color:#a21d15;background:var(--danger-light);border:1px solid #f0c3be}
+.records-card{width:100%}
+.record-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-bottom:1px solid var(--border);background:#fcfaf6}
+.record-count{padding:0;color:var(--muted);background:transparent;font-size:9px}
+.table-scroll{width:100%;max-width:100%;max-height:calc(100vh - 335px);overflow-x:auto;overflow-y:auto;scrollbar-width:thin}
+.table-scroll table{min-width:1400px}table{width:100%;border-collapse:collapse}table th,table td{white-space:nowrap}
+th,td{border-bottom:1px solid #e1d9ca;padding:6px;text-align:left;vertical-align:middle;font-size:8px}
+th{position:sticky;top:0;z-index:5;background:#f1eadc;color:#4b3a22;white-space:nowrap;font-weight:900;border-bottom:2px solid #cdb58a}
+td{color:#4d463b;background:#fff}tbody tr:hover td{background:#fcf8ef}
+.violation-column{min-width:210px;max-width:280px;white-space:normal;line-height:1.35}
+.cc-badge{display:inline-block;background:#f7efde;color:#805f25;border:1px solid #dfc995;border-radius:30px;padding:3px 6px;font-weight:900}
+.table-button{border:0;border-radius:4px;padding:5px 7px;font-size:8px;font-weight:800;transition:.15s ease}.table-button:hover{transform:translateY(-1px)}
+.delete-button{background:#fae2df;color:#a21d15}
+.no-records{text-align:center;padding:35px;color:var(--muted);background:#fcfaf6}
+.hidden{display:none!important}
+.table-scroll::-webkit-scrollbar{width:7px;height:7px}.table-scroll::-webkit-scrollbar-track{background:#f4f1ea}
+.table-scroll::-webkit-scrollbar-thumb{background:#c39a4e;border-radius:10px}.table-scroll::-webkit-scrollbar-thumb:hover{background:#9b7635}
+.save-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(31,27,22,.75);z-index:10000;align-items:center;justify-content:center}
+.save-overlay.active{display:flex}
+.save-box{background:#fff;border:2px solid var(--gold);border-radius:12px;padding:30px 40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.save-box h2{margin:0 0 10px;color:var(--brown);font-size:16px}.save-box p{margin:0;color:var(--muted);font-size:11px}
+.spinner{display:inline-block;width:30px;height:30px;border:3px solid #e8dfd0;border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:1050px){.dashboard-form{grid-template-columns:1fr 1fr}.evidence-card{grid-column:1/-1}.table-scroll{max-height:calc(100vh - 420px)}}
+@media(max-width:700px){body{zoom:.82}.app{padding:5px}.header{padding:10px}.header-top{align-items:flex-start}.header h1{font-size:17px}.dashboard-form{grid-template-columns:1fr}.evidence-card{grid-column:auto}.camera-buttons{flex-direction:column}.camera-buttons button{width:100%}.record-toolbar{align-items:stretch;flex-direction:column}.table-scroll{max-height:none}}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<header class="header">
+    <div class="header-top">
+        <div>
+            <h1>VYSYARAJU JEWELLERS PVT. LTD.</h1>
+            <p>Employee Grooming Violation / Incident Management Dashboard</p>
+        </div>
+        <div class="header-badge">VIOLATION CONTROL</div>
+    </div>
+</header>
+
+<form id="violationForm">
+<div class="dashboard-form">
+
+<section class="card entry-section" id="entryCard">
+<div class="card-header">Add Violation / Incident</div>
+<div class="form-container">
+    <div class="field"><label><span class="required">*</span> CC</label><select id="cc" required><option value="">Select CC</option><option value="AKP">AKP</option><option value="ASM">ASM</option><option value="DSN">DSN</option><option value="GPT">GPT</option><option value="GWK">GWK</option><option value="KKD">KKD</option><option value="MDW">MDW</option><option value="PBJ">PBJ</option><option value="PVP">PVP</option><option value="RJM">RJM</option><option value="SMG">SMG</option><option value="TGP">TGP</option><option value="TUN">TUN</option><option value="VJA">VJA</option><option value="VJM">VJM</option><option value="VZM">VZM</option></select></div>
+    <div class="field"><label><span class="required">*</span> Violation / Incident</label><select id="violation" required><option value="">Select Grooming Standard</option></select><div id="policyInfo" class="policy-info hidden"></div></div>
+    <div class="field"><label><span class="required">*</span> Incident Date</label><input type="date" id="incidentDate" required></div>
+    <div class="field"><label><span class="required">*</span> Incident Time</label><input type="time" id="incidentTime" required></div>
+</div></section>
+
+<section class="card employee-card">
+<div class="card-header">Employee Details</div>
+<div class="form-container">
+    <div class="field"><label><span class="required">*</span> Employee ID</label><input type="text" id="empId" inputmode="numeric" placeholder="Enter employee ID" maxlength="20" required><div class="lookup-status" id="employeeLookupStatus">Enter Employee ID for auto-lookup.</div></div>
+    <div class="field"><label><span class="required">*</span> Employee Name</label><input type="text" id="empName" placeholder="Auto-filled after Employee ID" required></div>
+    <div class="field"><label><span class="required">*</span> Employee Designation</label><input type="text" id="empDesignation" placeholder="Auto-filled after Employee ID" required></div>
+</div></section>
+
+<section class="card reporter-card">
+<div class="card-header">Reported / Captured By</div>
+<div class="form-container">
+    <div class="field"><label><span class="required">*</span> Report Employee ID</label><input type="text" id="reporterId" inputmode="numeric" placeholder="Report Employee ID" maxlength="20" required><div class="lookup-status" id="reporterLookupStatus">Enter Reporter Employee ID for auto-lookup.</div></div>
+    <div class="field"><label><span class="required">*</span> Report Name</label><input type="text" id="reporterName" placeholder="Auto-filled after Report ID" required></div>
+    <div class="field"><label><span class="required">*</span> Report Designation</label><input type="text" id="reporterDesignation" placeholder="Auto-filled after Report ID" required></div>
+</div></section>
+
+<section class="card evidence-card">
+<div class="card-header">Picture / Video Evidence</div>
+<div class="form-container">
+    <div class="media-container">
+        <label><span class="required">*</span> Evidence Type</label>
+        <select id="mediaType" required><option value="">Select Picture / Video</option><option value="live-photo">📷 Live Photo</option><option value="gallery-photo">🖼 Gallery Photo</option><option value="live-video">🎥 Live Video</option><option value="gallery-video">🎬 Gallery Video</option></select>
+        <button type="button" id="chooseMedia" class="media-button">Choose Evidence</button>
+        <input type="file" id="galleryPhotoInput" accept="image/*" class="hidden" multiple>
+        <input type="file" id="galleryVideoInput" accept="video/*" class="hidden">
+        <div id="cameraContainer" class="camera-container">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <div id="recordingStatus" class="recording-status">Recording: 00:00 / 02:00</div>
+            <div class="camera-buttons">
+                <button type="button" id="captureButton" class="capture">📸 Capture</button>
+                <button type="button" id="startRecordButton" class="start-record hidden">🔴 Record</button>
+                <button type="button" id="stopRecordButton" class="stop-record hidden">⏹ Stop</button>
+                <button type="button" id="closeCameraButton" class="close-camera">✕ Close</button>
+            </div>
+        </div>
+        <div id="mediaPreview" class="media-preview"></div>
+        <div class="media-note">📷 Photo: camera or gallery. 🎥 Video: up to 2 min, max 100MB. Multiple photos supported. Evidence is mandatory.</div>
+    </div>
+    <div class="field" style="margin-top:8px"><label>Remarks <span style="font-weight:400;color:#756b5c">(Optional)</span></label><textarea id="remarks" placeholder="Enter additional remarks"></textarea></div>
+    <div class="form-buttons">
+        <button type="button" id="clearButton" class="btn clear-btn">Clear</button>
+        <button type="submit" id="submitButton" class="btn submit-btn">+ Add Record</button>
+        <button type="button" id="saveButton" class="btn save-btn">⬆ Save</button>
+    </div>
+    <div id="status" class="status"></div>
+</div></section>
+
+</div>
+</form>
+
+<section class="card records-card">
+    <div class="card-header">Current Session Records</div>
+    <div class="record-toolbar"><div id="recordCount" class="record-count">0 records</div></div>
+    <div class="table-scroll">
+        <table>
+            <thead><tr>
+                <th>#</th><th>CC</th><th>Violation</th><th>Date</th><th>Time</th>
+                <th>EMP ID</th><th>EMP Name</th><th>Designation</th><th>Evidence</th>
+                <th>Report ID</th><th>Report Name</th><th>Report Desig</th>
+                <th>Penalty</th><th>Cost</th><th>Remarks</th><th>Remove</th>
+            </tr></thead>
+            <tbody id="recordsBody"></tbody>
+        </table>
+    </div>
+</section>
+
+</div>
+
+<div id="saveOverlay" class="save-overlay">
+    <div class="save-box">
+        <div class="spinner"></div>
+        <h2 id="saveOverlayTitle">Saving records...</h2>
+        <p id="saveOverlayText">Please wait. Do not close this page.</p>
+    </div>
+</div>
+
+<script>
+
+/* =========================================================
+   CONFIGURATION — UPDATE EMPLOYEE_LOOKUP_URL IF REDEPLOYED
+========================================================= */
+
+var CONFIG = {
+    EMPLOYEE_LOOKUP_URL: "https://script.google.com/macros/s/AKfycbwSdaHNhsBGNEsdDwVb8KsOUyFAI1j2L8zpdyV1Pbiq_rdvCSsi8DqPgliGr6TqpXHKTw/exec",
+    REPORT_URL: "https://script.google.com/macros/s/AKfycbyQ8i4MvS1NmYZ5Au4tV7N4tz6WKibn0Yu3cA15dGDwc78ip5lNwAsU5Vz7DxHNXYFp/exec",
+    MAX_VIDEO_DURATION: 120,
+    MAX_FILE_SIZE_MB: 100
+};
+
+/* =========================================================
+   POLICIES
+========================================================= */
+var POLICIES=[
+{id:1,standard:"No breakfast is allowed in the showrooms / Corporate Office premises.",penalty:200,remarks:"General",cctv:20,employeeFund:170},
+{id:2,standard:"Employees must remain at their assigned counters. Being found in other areas of the showroom without the manager's approval will result in a penalty.",penalty:100,remarks:"General",cctv:null,employeeFund:80},
+{id:3,standard:"Lunch breaks must not exceed 1 hour, tea breaks 10 minutes, and snack breaks 15 minutes. Exceeding the limit will result in a penalty.",penalty:200,remarks:"General",cctv:30,employeeFund:170},
+{id:4,standard:"All showroom employees, including the Branch Manager, must undergo a security check before leaving the premises.",penalty:200,remarks:"General",cctv:30,employeeFund:170},
+{id:5,standard:"Wearing unauthorized accessories as per Company policy, including Ear Buds, Ear Phones and unnecessary items.",penalty:200,remarks:"General",cctv:30,employeeFund:170},
+{id:6,standard:"Unnecessary leisure / chit chats more than 5 minutes at the counter in front of customers will result in a penalty.",penalty:200,remarks:"General",cctv:30,employeeFund:170},
+{id:7,standard:"Personal mobile phone use is not permitted while on duty without permission from the Manager.",penalty:200,remarks:"General",cctv:30,employeeFund:170},
+{id:8,standard:"Employees must maintain personal hygiene and ensure they are free from strong body odor or tobacco smell while on duty.",penalty:200,remarks:"General",cctv:null,employeeFund:170},
+{id:9,standard:"Employees must maintain a neat and professional appearance at all times by wearing a clean, ironed uniform with a visible ID card/name badge, properly combed hair, clean shaving, tie, belt, polished shoes, and the prescribed pearl set for female employees.",penalty:300,remarks:"HR",cctv:20,employeeFund:170},
+{id:10,standard:"Nail polish, lipstick, untrimmed nails, and ear piercings/studs are not permitted while on duty.",penalty:100,remarks:"HR",cctv:null,employeeFund:80},
+{id:11,standard:"Employees must report before showroom opening. Three instances of late attendance will be treated as a half-day absence.",penalty:100,remarks:"HR",cctv:null,employeeFund:100},
+{id:12,standard:"Repeated violations may result in half-day salary deduction, disciplinary action, or other penalties.",penalty:3000,remarks:"HR",cctv:null,employeeFund:3000}
+];
+
+var sessionRecords=[];
+var allMediaFiles=[];
+var cameraStream=null;
+var mediaRecorder=null;
+var recordedChunks=[];
+var recordingTimer=null;
+var recordingSeconds=0;
+
+function get(id){return document.getElementById(id)}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]})}
+function money(v){if(v===null||v===undefined||v==="")return"N/A";return"\u20B9 "+Number(v).toLocaleString("en-IN")}
+function setCurrentDateTime(){var n=new Date(),l=new Date(n.getTime()-n.getTimezoneOffset()*60000);get("incidentDate").value=l.toISOString().slice(0,10);get("incidentTime").value=l.toISOString().slice(11,16)}
+
+function loadPolicies(){var s=get("violation");POLICIES.forEach(function(p){var o=document.createElement("option");o.value=p.id;o.textContent=p.id+". "+p.standard;s.appendChild(o)})}
+function selectedPolicy(){return POLICIES.find(function(p){return p.id==get("violation").value})}
+function calcCost(p){return p?p.cctv:null}
+function updatePolicyDisplay(){var p=selectedPolicy(),el=get("policyInfo");if(!p){el.classList.add("hidden");return}el.classList.remove("hidden");el.innerHTML="<strong>Standard "+p.id+":</strong> "+esc(p.standard)+"<br><br><strong>Category:</strong> "+esc(p.remarks)}
+
+/* =========================================================
+   EMPLOYEE & REPORTER AUTO-LOOKUP
+   Uses POST (text/plain) just like your working script
+========================================================= */
+var _lookupTimers = {};
+
+async function fetchEmployeeDetails(empId, targetType) {
+    var nameInput = get(targetType === "employee" ? "empName" : "reporterName");
+    var desigInput = get(targetType === "employee" ? "empDesignation" : "reporterDesignation");
+    var statusEl = get(targetType === "employee" ? "employeeLookupStatus" : "reporterLookupStatus");
+
+    var cleanId = String(empId || "").trim();
+
+    if (!cleanId) {
+        nameInput.value = "";
+        desigInput.value = "";
+        statusEl.className = "lookup-status";
+        statusEl.textContent = targetType === "employee"
+            ? "Enter Employee ID for auto-lookup."
+            : "Enter Reporter Employee ID for auto-lookup.";
+        return;
+    }
+
+    statusEl.className = "lookup-status loading";
+    statusEl.textContent = "🔍 Searching Employee ID " + cleanId + "...";
+
+    var data = null;
+
+    try {
+        // Method 1: POST text/plain (Same as your working example)
+        var postResp = await fetch(CONFIG.EMPLOYEE_LOOKUP_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ action: "lookup", empId: cleanId })
+        });
+        data = await postResp.json();
+    } catch (postErr) {
+        try {
+            // Method 2: GET fallback
+            var getResp = await fetch(CONFIG.EMPLOYEE_LOOKUP_URL + "?empId=" + encodeURIComponent(cleanId));
+            data = await getResp.json();
+        } catch (getErr) {
+            statusEl.className = "lookup-status error";
+            statusEl.textContent = "⚠️ Run testAuthorize() in Apps Script & Deploy New Version.";
+            return;
+        }
+    }
+
+    if (data && data.found) {
+        nameInput.value = data.name || "";
+        desigInput.value = data.designation || "";
+        statusEl.className = "lookup-status found";
+        statusEl.textContent = "✅ Found: " + data.name + " (" + data.designation + ")";
+    } else {
+        nameInput.value = "";
+        desigInput.value = "";
+        statusEl.className = "lookup-status error";
+        statusEl.textContent = "❌ ID " + cleanId + " not found in database.";
+    }
+}
+
+function scheduleLookup(value, targetType) {
+    if (_lookupTimers[targetType]) clearTimeout(_lookupTimers[targetType]);
+    _lookupTimers[targetType] = setTimeout(function() {
+        fetchEmployeeDetails(value, targetType);
+    }, 350);
+}
+
+// Bind Employee ID input
+get("empId").addEventListener("input", function() {
+    scheduleLookup(this.value, "employee");
+});
+
+// Bind Report Employee ID input
+get("reporterId").addEventListener("input", function() {
+    scheduleLookup(this.value, "reporter");
+});
+
+/* =========================================================
+   CAMERA & MEDIA
+========================================================= */
+async function openCamera(audio){
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){showStatus("Camera not supported.",true);return false}
+    try{cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}},audio:!!audio});get("cameraVideo").srcObject=cameraStream;get("cameraContainer").classList.add("active");await get("cameraVideo").play();return true}
+    catch(e){showStatus("Camera error. Allow permission.",true);return false}
+}
+function closeCamera(){stopRecording();if(cameraStream){cameraStream.getTracks().forEach(function(t){t.stop()});cameraStream=null}get("cameraVideo").srcObject=null;get("cameraContainer").classList.remove("active");get("recordingStatus").classList.remove("active")}
+async function openLivePhoto(){if(!(await openCamera(false)))return;get("captureButton").classList.remove("hidden");get("startRecordButton").classList.add("hidden");get("stopRecordButton").classList.add("hidden")}
+get("captureButton").addEventListener("click",function(){var v=get("cameraVideo");if(!v.videoWidth){showStatus("Camera starting...",true);return}var c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);c.toBlob(function(b){if(!b){showStatus("Capture failed.",true);return}addMediaFile(new File([b],"photo-"+Date.now()+".jpg",{type:"image/jpeg"}),"live-photo");closeCamera();showStatus("📸 Photo captured.")},"image/jpeg",0.92)});
+async function openLiveVideo(){if(!(await openCamera(true)))return;get("captureButton").classList.add("hidden");get("startRecordButton").classList.remove("hidden");get("stopRecordButton").classList.add("hidden")}
+get("startRecordButton").addEventListener("click",function(){
+    if(!cameraStream){showStatus("Camera not open.",true);return}
+    recordedChunks=[];
+    var mt="video/webm;codecs=vp8,opus";if(!MediaRecorder.isTypeSupported(mt))mt="video/webm;codecs=vp8";if(!MediaRecorder.isTypeSupported(mt))mt="video/webm";
+    try{mediaRecorder=new MediaRecorder(cameraStream,{mimeType:mt})}catch(e){showStatus("Recording not supported.",true);return}
+    mediaRecorder.ondataavailable=function(e){if(e.data&&e.data.size>0)recordedChunks.push(e.data)};
+    mediaRecorder.onstop=function(){var blob=new Blob(recordedChunks,{type:mediaRecorder.mimeType||"video/webm"});if(!blob.size){showStatus("No video recorded.",true);return}var mb=blob.size/(1024*1024);if(mb>CONFIG.MAX_FILE_SIZE_MB){showStatus("Video too large: "+Math.round(mb)+"MB.",true);return}addMediaFile(new File([blob],"video-"+Date.now()+".webm",{type:blob.type}),"live-video");stopCameraOnly();get("recordingStatus").classList.remove("active");showStatus("🎥 Video: "+recordingSeconds+"s ("+Math.round(mb)+"MB).")};
+    mediaRecorder.onerror=function(){showStatus("Recording error.",true)};
+    mediaRecorder.start(250);recordingSeconds=0;
+    get("startRecordButton").classList.add("hidden");get("stopRecordButton").classList.remove("hidden");get("recordingStatus").classList.add("active");updateRecStatus();
+    recordingTimer=setInterval(function(){recordingSeconds++;updateRecStatus();if(recordingSeconds>=CONFIG.MAX_VIDEO_DURATION)stopRecording()},1000)
+});
+function updateRecStatus(){var m=String(Math.floor(recordingSeconds/60)).padStart(2,"0"),s=String(recordingSeconds%60).padStart(2,"0");get("recordingStatus").textContent="Recording: "+m+":"+s+" / 02:00"}
+function stopRecording(){if(recordingTimer){clearInterval(recordingTimer);recordingTimer=null}if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop();get("stopRecordButton").classList.add("hidden")}
+function stopCameraOnly(){if(cameraStream){cameraStream.getTracks().forEach(function(t){t.stop()});cameraStream=null}get("cameraVideo").srcObject=null;get("cameraContainer").classList.remove("active")}
+get("stopRecordButton").addEventListener("click",stopRecording);
+get("closeCameraButton").addEventListener("click",closeCamera);
+
+function addMediaFile(file,type){
+    allMediaFiles.push({file:file,type:type||"gallery-photo",url:URL.createObjectURL(file),label:type==="live-photo"?"Live Photo":type==="live-video"?"Live Video":type==="gallery-video"?"Gallery Video":"Photo "+(allMediaFiles.length+1)});
+    renderMediaPreview()
+}
+
+get("mediaType").addEventListener("change",function(){var v=this.value,b=get("chooseMedia");if(v==="live-photo")b.textContent="📷 Open Live Camera";else if(v==="gallery-photo")b.textContent="🖼 Open Gallery (Multiple)";else if(v==="live-video")b.textContent="🎥 Open Video Camera";else if(v==="gallery-video")b.textContent="🎬 Select Video";else b.textContent="Choose Evidence"});
+get("chooseMedia").addEventListener("click",async function(){var t=get("mediaType").value;if(!t){showStatus("Select Picture / Video first.",true);return}if(t==="live-photo")await openLivePhoto();else if(t==="gallery-photo")get("galleryPhotoInput").click();else if(t==="live-video")await openLiveVideo();else if(t==="gallery-video")get("galleryVideoInput").click()});
+
+get("galleryPhotoInput").addEventListener("change",function(e){var f=e.target.files;if(!f||!f.length)return;for(var i=0;i<f.length;i++){if(!f[i].type.startsWith("image/"))continue;addMediaFile(f[i],"gallery-photo")}showStatus(f.length+" photo(s) added.");this.value=""});
+
+get("galleryVideoInput").addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;if(!f.type.startsWith("video/")){showStatus("Select valid video.",true);this.value="";return}var mb=f.size/(1024*1024);if(mb>CONFIG.MAX_FILE_SIZE_MB){showStatus("Video too large: "+Math.round(mb)+"MB.",true);this.value="";return}var v=document.createElement("video"),u=URL.createObjectURL(f);v.preload="metadata";v.onloadedmetadata=function(){var d=v.duration;URL.revokeObjectURL(u);if(d>CONFIG.MAX_VIDEO_DURATION){showStatus("Video too long: "+Math.ceil(d)+"s.",true);return}addMediaFile(f,"gallery-video");showStatus("Video: "+Math.ceil(d)+"s ("+Math.round(mb)+"MB).")};v.onerror=function(){URL.revokeObjectURL(u);showStatus("Cannot read video.",true)};v.src=u;this.value=""});
+
+function renderMediaPreview(){var c=get("mediaPreview");c.innerHTML="";allMediaFiles.forEach(function(item,i){var card=document.createElement("div");card.className="preview-card";var el=item.type.includes("video")?Object.assign(document.createElement("video"),{controls:true,muted:true}):document.createElement("img");el.src=item.url;var rm=Object.assign(document.createElement("button"),{type:"button",className:"remove-media",textContent:"×"});rm.dataset.index=i;rm.addEventListener("click",function(){var idx=parseInt(this.dataset.index);URL.revokeObjectURL(allMediaFiles[idx].url);allMediaFiles.splice(idx,1);renderMediaPreview();if(!allMediaFiles.length){get("mediaType").value="";get("chooseMedia").textContent="Choose Evidence"}});card.appendChild(el);card.appendChild(rm);c.appendChild(card)})}
+
+function fileToBase64(file){return new Promise(function(ok,no){var r=new FileReader();r.onload=function(){var s=String(r.result||""),ci=s.indexOf(",");ok({name:file.name,mimeType:file.type||"application/octet-stream",size:file.size,base64:ci>=0?s.slice(ci+1):s})};r.onerror=function(){no(new Error("Cannot read file"))};r.readAsDataURL(file)})}
+
+function showStatus(msg,err){var s=get("status");s.textContent=msg;s.className=err?"status show error":"status show success";setTimeout(function(){if(s.textContent===msg){s.textContent="";s.className="status"}},7000)}
+function showOverlay(t,x){get("saveOverlayTitle").textContent=t||"Saving...";get("saveOverlayText").textContent=x||"Please wait.";get("saveOverlay").classList.add("active")}
+function hideOverlay(){get("saveOverlay").classList.remove("active")}
+
+function resetForm(){get("violationForm").reset();allMediaFiles.forEach(function(m){URL.revokeObjectURL(m.url)});allMediaFiles=[];closeCamera();renderMediaPreview();get("submitButton").textContent="+ Add Record";get("chooseMedia").textContent="Choose Evidence";get("entryCard").classList.remove("editing");get("employeeLookupStatus").className="lookup-status";get("employeeLookupStatus").textContent="Enter Employee ID for auto-lookup.";get("reporterLookupStatus").className="lookup-status";get("reporterLookupStatus").textContent="Enter Reporter Employee ID for auto-lookup.";setCurrentDateTime();updatePolicyDisplay()}
+get("clearButton").addEventListener("click",function(){resetForm();showStatus("Form cleared.")});
+
+get("violationForm").addEventListener("submit",function(e){
+    e.preventDefault();
+    if(!this.checkValidity()){this.reportValidity();return}
+    var policy=selectedPolicy();if(!policy){showStatus("Select a grooming standard.",true);return}
+    if(mediaRecorder&&mediaRecorder.state==="recording"){showStatus("Stop recording first.",true);return}
+    if(!allMediaFiles.length){showStatus("Evidence is mandatory.",true);return}
+    sessionRecords.push({
+        _localId:Date.now()+"-"+Math.random().toString(36).slice(2),
+        cc:get("cc").value,policyId:policy.id,violation:policy.standard,
+        incidentDate:get("incidentDate").value,incidentTime:get("incidentTime").value,
+        empId:get("empId").value,empName:get("empName").value,empDesignation:get("empDesignation").value,
+        mediaType:allMediaFiles[0].type,mediaLabel:allMediaFiles.length+" file(s)",mediaUrl:allMediaFiles[0].url,
+        mediaFiles:allMediaFiles.map(function(m){return{file:m.file,type:m.type}}),
+        reporterId:get("reporterId").value,reporterName:get("reporterName").value,reporterDesignation:get("reporterDesignation").value,
+        penalty:policy.penalty,applicableCost:calcCost(policy),employeeFund:policy.employeeFund,
+        policyRemarks:policy.remarks,remarks:get("remarks").value,createdAt:new Date().toISOString()
+    });
+    renderTable();
+    showStatus("✅ Record #"+sessionRecords.length+" added. Add more or press Save.");
+    resetForm();
+});
+
+function removeSession(idx){if(!confirm("Remove this record?"))return;sessionRecords.splice(idx,1);renderTable();showStatus("Record removed.")}
+window.removeSession=removeSession;
+
+function renderTable(){var body=get("recordsBody");body.innerHTML="";var count=sessionRecords.length;get("recordCount").textContent=count+" record"+(count!==1?"s":"");if(count===0){body.innerHTML='<tr><td colspan="16" class="no-records">No records in current session. Add violations above.</td></tr>';return}sessionRecords.forEach(function(r,idx){var row=document.createElement("tr");row.innerHTML='<td>'+(idx+1)+'</td><td><span class="cc-badge">'+esc(r.cc)+'</span></td><td class="violation-column"><strong>'+esc(r.policyId)+'. '+esc(r.violation)+'</strong></td><td>'+esc(r.incidentDate)+'</td><td>'+esc(r.incidentTime)+'</td><td>'+esc(r.empId)+'</td><td>'+esc(r.empName)+'</td><td>'+esc(r.empDesignation)+'</td><td>📎 '+esc(r.mediaLabel)+'</td><td>'+esc(r.reporterId)+'</td><td>'+esc(r.reporterName)+'</td><td>'+esc(r.reporterDesignation)+'</td><td>'+money(r.penalty)+'</td><td>'+money(r.applicableCost)+'</td><td>'+(r.remarks?esc(r.remarks):'—')+'</td><td><button class="table-button delete-button" onclick="removeSession('+idx+')">✕ Remove</button></td>';body.appendChild(row)})}
+
+get("saveButton").addEventListener("click",async function(){
+    if(!sessionRecords.length){showStatus("No records to save.",true);return}
+    if(!CONFIG.REPORT_URL){showStatus("Server URL not configured.",true);return}
+    
+    var btn=this;btn.disabled=true;
+    var total=sessionRecords.length;
+    showOverlay("Uploading "+total+" record(s)...","Please wait. Do not close this page.");
+    
+    var ok=0,fail=0,errs=[];
+    
+    for(var i=0;i<total;i++){
+        var rec=sessionRecords[i];
+        get("saveOverlayText").textContent="Uploading record "+(i+1)+" of "+total+"...";
+        
+        var mediaPayload=null;
+        if(rec.mediaFiles&&rec.mediaFiles.length>0){
+            try{var f=rec.mediaFiles[0].file;if(f&&f instanceof File)mediaPayload=await fileToBase64(f)}
+            catch(e){console.warn("Media error:",e)}
+        }
+        
+        try{
+            var resp=await fetch(CONFIG.REPORT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action:"saveRecord",record:{cc:rec.cc,policyId:rec.policyId,violation:rec.violation,incidentDate:rec.incidentDate,incidentTime:rec.incidentTime,empId:rec.empId,empName:rec.empName,empDesignation:rec.empDesignation,mediaType:rec.mediaType,mediaLabel:rec.mediaLabel,reporterId:rec.reporterId,reporterName:rec.reporterName,reporterDesignation:rec.reporterDesignation,penalty:rec.penalty,applicableCost:rec.applicableCost,employeeFund:rec.employeeFund,policyRemarks:rec.policyRemarks,remarks:rec.remarks,createdAt:rec.createdAt},media:mediaPayload})});
+            var data=await resp.json();
+            if(data&&data.success){ok++;console.log("Record "+(i+1)+" saved:",data.message)}
+            else{fail++;errs.push("Record "+(i+1)+": "+((data&&data.message)||"Unknown error"))}
+        }catch(e){fail++;errs.push("Record "+(i+1)+": "+e.message)}
+    }
+    
+    hideOverlay();btn.disabled=false;
+    
+    if(fail===0){
+        sessionRecords=[];
+        for(var j=0;j<allMediaFiles.length;j++){if(allMediaFiles[j]&&allMediaFiles[j].url)URL.revokeObjectURL(allMediaFiles[j].url)}
+        allMediaFiles=[];
+        renderTable();
+        resetForm();
+        showStatus("✅ All "+ok+" records saved to Google Sheet! Dashboard cleared and ready for new entries.");
+        window.scrollTo({top:0,behavior:"smooth"});
+    }else{
+        showStatus("⚠️ "+ok+" saved, "+fail+" failed. Errors: "+errs.join("; "),true);
+    }
+});
+
+get("violation").addEventListener("change",updatePolicyDisplay);
+get("cc").addEventListener("change",updatePolicyDisplay);
+
+loadPolicies();setCurrentDateTime();updatePolicyDisplay();renderTable();
+
+window.addEventListener("beforeunload",function(){if(cameraStream)cameraStream.getTracks().forEach(function(t){t.stop()})});
+
+</script>
+</body>
+</html>
