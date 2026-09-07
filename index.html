@@ -132,7 +132,9 @@ button:disabled{opacity:.6;cursor:not-allowed;transform:none!important}
 <div class="form-container">
     <div class="media-container">
         <label><span class="required">*</span> Evidence Type</label>
-        <select id="mediaType" required><option value="">Select Picture / Video</option><option value="live-photo">📷 Live Photo</option><option value="gallery-photo">🖼 Gallery Photo</option><option value="live-video">🎥 Live Video</option><option value="gallery-video">🎬 Gallery Video</option></select>
+        <select id="mediaType" required><option value="">Select Picture / Video</option><option value="live-photo">📷 Live Photo</option><option value="gallery-photo">🖼 Gallery Photo</option> 
+            <!-- <option value="live-video">🎥 Live Video</option> -->
+            <option value="gallery-video">🎬 Gallery Video</option></select>
         <button type="button" id="chooseMedia" class="media-button">Choose Evidence</button>
         <input type="file" id="galleryPhotoInput" accept="image/*" class="hidden" multiple>
         <input type="file" id="galleryVideoInput" accept="video/*" class="hidden">
